@@ -1,5 +1,7 @@
 export default {
   preset: "ts-jest",
-  moduleNameMapper: {},
+  moduleNameMapper: {
+    "\\.(css|scss)$": "identity-obj-proxy",
+  },
   testEnvironment: "jsdom",
 };

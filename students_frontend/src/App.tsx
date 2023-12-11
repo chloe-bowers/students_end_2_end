@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { Student, fetchData } from "./utils/fetch_students";
 
+import "./App.css";
+
 function App() {
   const [students, setStudents] = useState<Student[]>([]);
 
