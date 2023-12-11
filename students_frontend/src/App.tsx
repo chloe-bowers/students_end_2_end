@@ -1,29 +1,16 @@
 import { useState, useEffect } from "react";
-import "./App.css";
+import { Student, fetchData } from "./utils/fetch_students";
 
-interface Student {
-  id: number;
-  first_name: string;
-  last_name: string;
-  check_in_time: string;
-}
+import "./App.css";
 
 function App() {
   const [students, setStudents] = useState<Student[]>([]);
 
   useEffect(() => {
-    fetchData();
+    fetchData()
+      .then((data) => setStudents(data))
+      .catch((error) => console.error(error));
   }, []);
-
-  const fetchData = async () => {
-    try {
-      const response = await fetch("http://localhost:3000/index");
-      const data: Student[] = await response.json();
-      setStudents(data);
-    } catch (error) {
-      console.error("Error fetching data", error);
-    }
-  };
 
   return (
     <div>
