@@ -4,6 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "npm run kill-ports && concurrently \"npm run start-backend\" \"npm run start-frontend\"",
+    "start-backend": "node server.js",
+    "start-frontend": "cd ./students_frontend && npm run dev",
+    "kill-ports": "kill-port 3000 && kill-port 5173",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -13,5 +17,9 @@
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "pg": "^8.11.3"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "kill-port": "^2.0.1"
   }
 }
