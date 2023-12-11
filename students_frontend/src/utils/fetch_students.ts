@@ -11,7 +11,7 @@ export const fetchData = async (): Promise<Student[]> => {
     const data: Student[] = await response.json();
     return data;
   } catch (error) {
-    console.error("Error fetching data", error);
-    throw new Error("Failed to fetch data");
+    console.log("Error fetching data", error);
+    throw null
   }
 };

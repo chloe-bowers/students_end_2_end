@@ -1,15 +1,13 @@
 import { useState, useEffect } from "react";
 import { Student, fetchData } from "./utils/fetch_students";
 
-import "./App.css";
-
 function App() {
   const [students, setStudents] = useState<Student[]>([]);
 
   useEffect(() => {
     fetchData()
       .then((data) => setStudents(data))
-      .catch((error) => console.error(error));
+      .catch((error) => console.log(error));
   }, []);
 
   return (
