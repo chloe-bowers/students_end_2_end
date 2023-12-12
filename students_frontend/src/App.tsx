@@ -1,16 +1,66 @@
 import { useState, useEffect } from "react";
-import { Student, fetchData } from "./utils/fetch_students";
-
+import { fetchData } from "./utils/fetch_students";
+import { postData } from "./utils/post_students";
 import "./App.css";
+import { Student } from "./interfaces";
 
 function App() {
   const [students, setStudents] = useState<Student[]>([]);
+  const [showInputFields, setShowInputFields] = useState(false);
+  const [inputValues, setInputValues] = useState({
+    id: null,
+    firstName: "",
+    lastName: "",
+    checkInTime: "",
+  });
 
   useEffect(() => {
     fetchData()
       .then((data) => setStudents(data))
       .catch((error) => console.log(error));
   }, []);
+
+  const handleButtonClick = () => {
+    setShowInputFields(true);
+  };
+
+  const handleSaveClick = async () => {
+    try {
+      const newStudent = {
+        id: students.length + 1,
+        first_name: inputValues.firstName,
+        last_name: inputValues.lastName,
+        check_in_time: inputValues.checkInTime,
+      };
+
+      await postData(newStudent);
+
+      setInputValues({
+        id: null,
+        firstName: "",
+        lastName: "",
+        checkInTime: "",
+      });
+
+      setShowInputFields(false);
+
+      const updatedData = await fetchData();
+      setStudents(updatedData);
+    } catch (error) {
+      console.error("Error saving data", error);
+    }
+  };
+
+  const handleInputChange = (e: {
+    target: { name: string; value: string };
+  }) => {
+    const { name, value } = e.target;
+
+    setInputValues((prevValues) => ({
+      ...prevValues,
+      [name]: value,
+    }));
+  };
 
   return (
     <div>
@@ -28,11 +78,38 @@ function App() {
             <tr key={student.id}>
               <td>{student.first_name}</td>
               <td>{student.last_name}</td>
-              <td>{student.check_in_time}</td>
+              <td>{new Date(student.check_in_time).toLocaleString()}</td>
             </tr>
           ))}
         </tbody>
       </table>
+      {showInputFields && (
+        <div>
+          <input
+            type="text"
+            name="firstName"
+            placeholder="First Name"
+            value={inputValues.firstName}
+            onChange={handleInputChange}
+          />
+          <input
+            type="text"
+            name="lastName"
+            placeholder="Last Name"
+            value={inputValues.lastName}
+            onChange={handleInputChange}
+          />
+          <input
+            type="date"
+            name="checkInTime"
+            placeholder="Check In Time"
+            value={inputValues.checkInTime}
+            onChange={handleInputChange}
+          />
+          <button onClick={handleSaveClick}>Save</button>
+        </div>
+      )}
+      <button onClick={handleButtonClick}>Add Student</button>
     </div>
   );
 }
