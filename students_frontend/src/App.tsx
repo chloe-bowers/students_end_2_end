@@ -6,6 +6,7 @@ import { Student } from "./interfaces";
 
 function App() {
   const [students, setStudents] = useState<Student[]>([]);
+  console.log(students);
   const [showInputFields, setShowInputFields] = useState(true);
   const [inputValues, setInputValues] = useState({
     id: null,
@@ -13,7 +14,7 @@ function App() {
     lastName: "",
     email: "",
     major: "",
-    checkins: 0,
+    numberOfCheckins: 0,
     checkInTime: "",
   });
   const [error, setError] = useState<string | null>(null);
@@ -45,7 +46,7 @@ function App() {
         first_name: inputValues.firstName,
         last_name: inputValues.lastName,
         email: inputValues.email,
-        checkins: inputValues.checkins,
+        number_of_check_ins: inputValues.numberOfCheckins,
         major: inputValues.major,
         check_in_time: inputValues.checkInTime,
       };
@@ -58,7 +59,7 @@ function App() {
         lastName: "",
         email: "",
         major: "",
-        checkins: 0,
+        numberOfCheckins: 0,
         checkInTime: "",
       });
 
@@ -107,7 +108,7 @@ function App() {
               <td>{student.last_name}</td>
               <td>{student.email}</td>
               <td>{student.major}</td>
-              <td>{student.checkins}</td>
+              <td>{student.number_of_check_ins}</td>
             </tr>
           ))}
         </tbody>

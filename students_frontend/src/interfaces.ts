@@ -4,6 +4,6 @@ export interface Student {
   last_name: string;
   email: string;
   major: string;
-  checkins: number,
+  number_of_check_ins: number;
   check_in_time: string | Date;
 }

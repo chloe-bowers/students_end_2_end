@@ -28,24 +28,20 @@ app.get("/index", async (req, res) => {
 });
 
 app.post("/index", async (req, res) => {
-  const { first_name, last_name, email, major, checkins } = req.body;
+  const { first_name, last_name, email, major, number_of_check_ins } = req.body;
 
   console.log(req.body);
-  if (!first_name || !last_name || !email || !major || !checkins) {
-    return res
-      .status(400)
-      .send(
-        "Error missing data"
-      );
+  if (!first_name || !last_name || !email || !major || !number_of_check_ins) {
+    return res.status(400).send("Error missing data");
   }
 
   try {
     const query = `
-      INSERT INTO students_table (first_name, last_name, email, major, checkins )
+      INSERT INTO students_table (first_name, last_name, email, major, number_of_check_ins )
       VALUES ($1, $2, $3, $4, $5)
       RETURNING id;
     `;
-    const values = [first_name, last_name, email, major, checkins];
+    const values = [first_name, last_name, email, major, number_of_check_ins];
 
     const result = await pool.query(query, values);
     res
