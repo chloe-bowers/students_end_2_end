@@ -6,11 +6,14 @@ import { Student } from "./interfaces";
 
 function App() {
   const [students, setStudents] = useState<Student[]>([]);
-  const [showInputFields, setShowInputFields] = useState(false);
+  const [showInputFields, setShowInputFields] = useState(true);
   const [inputValues, setInputValues] = useState({
     id: null,
     firstName: "",
     lastName: "",
+    email: "",
+    major: "",
+    checkins: 0,
     checkInTime: "",
   });
   const [error, setError] = useState<string | null>(null);
@@ -31,7 +34,8 @@ function App() {
       if (
         !inputValues.firstName ||
         !inputValues.lastName ||
-        !inputValues.checkInTime
+        !inputValues.email ||
+        !inputValues.major
       ) {
         throw new Error("Please fill in all fields.");
       }
@@ -40,6 +44,9 @@ function App() {
         id: students.length + 1,
         first_name: inputValues.firstName,
         last_name: inputValues.lastName,
+        email: inputValues.email,
+        checkins: inputValues.checkins,
+        major: inputValues.major,
         check_in_time: inputValues.checkInTime,
       };
 
@@ -49,6 +56,9 @@ function App() {
         id: null,
         firstName: "",
         lastName: "",
+        email: "",
+        major: "",
+        checkins: 0,
         checkInTime: "",
       });
 
@@ -74,6 +84,8 @@ function App() {
     }));
   };
 
+  //<td>{new Date(student.check_in_time).toLocaleString()}</td>
+
   return (
     <div>
       <h1>Student Data</h1>
@@ -83,7 +95,9 @@ function App() {
           <tr>
             <th>First name</th>
             <th>Last name</th>
-            <th>Check in time</th>
+            <th>Email</th>
+            <th>Major</th>
+            <th>No. of checkins</th>
           </tr>
         </thead>
         <tbody>
@@ -91,13 +105,29 @@ function App() {
             <tr key={student.id}>
               <td>{student.first_name}</td>
               <td>{student.last_name}</td>
-              <td>{new Date(student.check_in_time).toLocaleString()}</td>
+              <td>{student.email}</td>
+              <td>{student.major}</td>
+              <td>{student.checkins}</td>
             </tr>
           ))}
         </tbody>
       </table>
       {showInputFields && (
         <div>
+          <input
+            type="text"
+            name="email"
+            placeholder=".edu email"
+            value={inputValues.email}
+            onChange={handleInputChange}
+          />
+          <input
+            type="text"
+            name="major"
+            placeholder="your major"
+            value={inputValues.major}
+            onChange={handleInputChange}
+          />
           <input
             type="text"
             name="firstName"
@@ -112,13 +142,7 @@ function App() {
             value={inputValues.lastName}
             onChange={handleInputChange}
           />
-          <input
-            type="datetime-local"
-            name="checkInTime"
-            placeholder="Check In Time"
-            value={inputValues.checkInTime}
-            onChange={handleInputChange}
-          />
+
           <button onClick={handleSaveClick}>Save</button>
         </div>
       )}
