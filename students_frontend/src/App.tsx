@@ -13,6 +13,7 @@ function App() {
     lastName: "",
     checkInTime: "",
   });
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchData()
@@ -22,10 +23,19 @@ function App() {
 
   const handleButtonClick = () => {
     setShowInputFields(true);
+    setError(null);
   };
 
   const handleSaveClick = async () => {
     try {
+      if (
+        !inputValues.firstName ||
+        !inputValues.lastName ||
+        !inputValues.checkInTime
+      ) {
+        throw new Error("Please fill in all fields.");
+      }
+
       const newStudent = {
         id: students.length + 1,
         first_name: inputValues.firstName,
@@ -46,8 +56,10 @@ function App() {
 
       const updatedData = await fetchData();
       setStudents(updatedData);
-    } catch (error) {
-      console.error("Error saving data", error);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      console.error("Error saving data", error.message);
+      setError(error.message);
     }
   };
 
@@ -65,6 +77,7 @@ function App() {
   return (
     <div>
       <h1>Student Data</h1>
+      {error && <p style={{ color: "red" }}>{error}</p>}
       <table>
         <thead>
           <tr>
@@ -100,7 +113,7 @@ function App() {
             onChange={handleInputChange}
           />
           <input
-            type="date"
+            type="datetime-local"
             name="checkInTime"
             placeholder="Check In Time"
             value={inputValues.checkInTime}
