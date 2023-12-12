@@ -31,7 +31,7 @@ app.post("/index", async (req, res) => {
   const { first_name, last_name, email, major, number_of_check_ins } = req.body;
 
   console.log(req.body);
-  if (!first_name || !last_name || !email || !major || !number_of_check_ins) {
+  if (!first_name || !last_name || !email || !major) {
     return res.status(400).send("Error missing data");
   }
 

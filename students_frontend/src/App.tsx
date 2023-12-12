@@ -1,21 +1,22 @@
 import { useState, useEffect } from "react";
 import { fetchData } from "./utils/fetch_students";
+import { fetchMajors } from "./utils/fetch_majors";
 import { postData } from "./utils/post_students";
 import "./App.css";
-import { Student } from "./interfaces";
+import { Major, Student } from "./interfaces";
 
 function App() {
   const [students, setStudents] = useState<Student[]>([]);
-  console.log(students);
+  const [majors, setMajors] = useState<Major[]>([]);
+  const [selectedMajor, setSelectedMajor] = useState<string>("");
   const [showInputFields, setShowInputFields] = useState(true);
+  const [showTable, setShowTable] = useState(false);
   const [inputValues, setInputValues] = useState({
     id: null,
     firstName: "",
     lastName: "",
     email: "",
-    major: "",
     numberOfCheckins: 0,
-    checkInTime: "",
   });
   const [error, setError] = useState<string | null>(null);
 
@@ -23,11 +24,16 @@ function App() {
     fetchData()
       .then((data) => setStudents(data))
       .catch((error) => console.log(error));
+
+    fetchMajors()
+      .then((data) => setMajors(data.majors))
+      .catch((error) => console.log(error));
   }, []);
 
   const handleButtonClick = () => {
     setShowInputFields(true);
     setError(null);
+    setShowTable(!showTable);
   };
 
   const handleSaveClick = async () => {
@@ -36,9 +42,15 @@ function App() {
         !inputValues.firstName ||
         !inputValues.lastName ||
         !inputValues.email ||
-        !inputValues.major
+        !selectedMajor
       ) {
         throw new Error("Please fill in all fields.");
+      }
+
+      const emailRegex = /\.edu(?:\..+)?$/;
+
+      if (!emailRegex.test(inputValues.email)) {
+        throw new Error("Please use a valid .edu email address.");
       }
 
       const newStudent = {
@@ -47,8 +59,7 @@ function App() {
         last_name: inputValues.lastName,
         email: inputValues.email,
         number_of_check_ins: inputValues.numberOfCheckins,
-        major: inputValues.major,
-        check_in_time: inputValues.checkInTime,
+        major: selectedMajor,
       };
 
       await postData(newStudent);
@@ -58,9 +69,7 @@ function App() {
         firstName: "",
         lastName: "",
         email: "",
-        major: "",
         numberOfCheckins: 0,
-        checkInTime: "",
       });
 
       setShowInputFields(false);
@@ -85,69 +94,79 @@ function App() {
     }));
   };
 
-  //<td>{new Date(student.check_in_time).toLocaleString()}</td>
-
   return (
     <div>
       <h1>Student Data</h1>
       {error && <p style={{ color: "red" }}>{error}</p>}
-      <table>
-        <thead>
-          <tr>
-            <th>First name</th>
-            <th>Last name</th>
-            <th>Email</th>
-            <th>Major</th>
-            <th>No. of checkins</th>
-          </tr>
-        </thead>
-        <tbody>
-          {students.map((student) => (
-            <tr key={student.id}>
-              <td>{student.first_name}</td>
-              <td>{student.last_name}</td>
-              <td>{student.email}</td>
-              <td>{student.major}</td>
-              <td>{student.number_of_check_ins}</td>
+      <div>
+        {showInputFields && (
+          <div>
+            <select
+              name="major"
+              value={selectedMajor}
+              onChange={(e) => setSelectedMajor(e.target.value)}
+            >
+              <option value="" disabled>
+                Select a Major
+              </option>
+              {majors.map((major) => (
+                <option key={major.name} value={major.name}>
+                  {major.name}
+                </option>
+              ))}
+            </select>
+            <input
+              type="text"
+              name="firstName"
+              placeholder="First Name"
+              value={inputValues.firstName}
+              onChange={handleInputChange}
+            />
+            <input
+              type="text"
+              name="lastName"
+              placeholder="Last Name"
+              value={inputValues.lastName}
+              onChange={handleInputChange}
+            />
+            <input
+              type="text"
+              name="email"
+              placeholder=".edu email"
+              value={inputValues.email}
+              onChange={handleInputChange}
+            />
+            <button onClick={handleSaveClick}>Submit</button>
+          </div>
+        )}
+        <button onClick={handleButtonClick}>
+          {showTable ? "Hide Table" : "Show Table"}
+        </button>
+      </div>
+      {showTable && (
+        <table>
+          <thead>
+            <tr>
+              <th>First name</th>
+              <th>Last name</th>
+              <th>Email</th>
+              <th>Major</th>
+              <th>No. of checkins</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-      {showInputFields && (
-        <div>
-          <input
-            type="text"
-            name="email"
-            placeholder=".edu email"
-            value={inputValues.email}
-            onChange={handleInputChange}
-          />
-          <input
-            type="text"
-            name="major"
-            placeholder="your major"
-            value={inputValues.major}
-            onChange={handleInputChange}
-          />
-          <input
-            type="text"
-            name="firstName"
-            placeholder="First Name"
-            value={inputValues.firstName}
-            onChange={handleInputChange}
-          />
-          <input
-            type="text"
-            name="lastName"
-            placeholder="Last Name"
-            value={inputValues.lastName}
-            onChange={handleInputChange}
-          />
-
-          <button onClick={handleSaveClick}>Save</button>
-        </div>
+          </thead>
+          <tbody>
+            {students.map((student) => (
+              <tr key={student.id}>
+                <td>{student.first_name}</td>
+                <td>{student.last_name}</td>
+                <td>{student.email}</td>
+                <td>{student.major}</td>
+                <td>{student.number_of_check_ins}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       )}
-      <button onClick={handleButtonClick}>Add Student</button>
     </div>
   );
 }
